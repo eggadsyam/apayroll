@@ -1,58 +1,197 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 💼 APayroll - Human Resource & Payroll Management System
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 12">
+  <img src="https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2+">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
 </p>
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📌 Tentang Aplikasi
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**APayroll** adalah sistem informasi manajemen sumber daya manusia (HRIS) dan penggajian (*Payroll System*) berbasis web yang dirancang khusus untuk mempermudah pengelolaan data karyawan, absensi, pengajuan lembur/cuti dengan alur persetujuan bertingkat, hingga kalkulasi penggajian otomatis (termasuk BPJS dan PPh 21 TER) serta penerbitan slip gaji PDF.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Aplikasi ini dilengkapi dengan **Employee Self-Service (Portal Karyawan)** dan manajemen hak akses berbasis peran (**Role-Based Access Control / RBAC**).
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ✨ Fitur Utama
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. 🏢 Manajemen Data Master & Kepegawaian
+- **Data Karyawan Lengkap**: Informasi personal, jabatan, departemen, status ketenagakerjaan (PKWT, PKWTT, Freelance), shift kerja, data bank, serta NPWP/BPJS.
+- **Import & Export Data**: Dukungan import data karyawan massal via Excel.
+- **Departemen & Jabatan**: Struktur organisasi perusahaan yang rapi dan fleksibel.
+- **Manajemen Shift Kerja**: Pengaturan jam masuk, pulang, serta toleransi keterlambatan.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### 2. ⏱️ Presensi & Absensi (Attendance)
+- Pencatatan kehadiran harian karyawan.
+- Perhitungan keterlambatan dan pulang cepat secara otomatis.
+- Fitur import absensi harian dari file spreadsheet/mesin finger.
+- Rekapitulasi absensi bulanan untuk integrasi ke payroll.
 
-## Agentic Development
+### 3. 📝 Pengajuan Cuti & Lembur (Leave & Overtime)
+- **Multi-level Approval Workflow**:
+  - Pengajuan oleh Karyawan.
+  - Persetujuan Tahap 1 oleh **Manager / Atasan Langsung** per departemen.
+  - Persetujuan Tahap Akhir oleh **HRD**.
+- Saldo dan kuota cuti tahunan terpantau secara real-time.
+- Perhitungan upah lembur otomatis sesuai ketentuan jam kerja.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 4. 💳 Pinjaman / Kasbon Karyawan (Employee Loans)
+- Pencatatan pengajuan pinjaman karyawan dan tenor cicilan.
+- Pemotongan cicilan pinjaman otomatis setiap periode payroll diproses.
+- Riwayat pembayaran dan sisa saldo pinjaman tercatat transparan.
 
+### 5. 💰 Penggajian Otomatis (Payroll Engine)
+- **Komponen Gaji Fleksibel**: Komponen tunjangan tetap, tunjangan tidak tetap, premi, insentif, dan potongan.
+- **Kalkulasi Pajak PPh 21 TER**: Mengikuti regulasi Tarif Efektif Rata-Rata (Kategori A, B, C).
+- **Perhitungan BPJS**: BPJS Ketenagakerjaan (JKK, JKM, JHT, JP) dan BPJS Kesehatan (perusahaan & karyawan).
+- **Siklus Penggajian Terstruktur**:
+  1. *Draft Payroll* dibuat oleh HRD.
+  2. *Approval* oleh Manager.
+  3. *Approval & Pembayaran* oleh Finance.
+- **Cetak Slip Gaji**: Unduh slip gaji berformat PDF baik secara individual maupun *bulk download* (zip/semua).
+
+### 6. 📱 Employee Self-Service (Portal Karyawan)
+- Dashboard personal untuk staf:
+  - Ringkasan kehadiran dan jatah cuti.
+  - Formulir pengajuan cuti dan lembur langsung dari HP/desktop.
+  - Riwayat gaji dan unduh slip gaji PDF mandiri.
+  - Notifikasi persetujuan secara instan.
+
+### 7. 📊 Laporan & Audit
+- Rekapitulasi Penggajian (Payroll Summary) & Rincian Komponen (Payroll Detail).
+- Rekapitulasi Absensi & Lembur Karyawan.
+- Daftar transfer bank untuk kebutuhan divisi Finance.
+- **Activity Log / Audit Trail** menggunakan Spatie Activitylog untuk merekam seluruh perubahan data penting.
+
+---
+
+## 👥 Hirarki Peran & Hak Akses (RBAC)
+
+Aplikasi memiliki 5 tingkatan peran dengan wewenang yang terpisah:
+
+| Peran | Deskripsi Singkat | Ruang Lingkup Akses |
+|---|---|---|
+| **Super Admin** | Administrator Sistem | Akses penuh ke seluruh menu, pengaturan perusahaan, manajemen user, dan log sistem. |
+| **HRD** | Bagian Personalia | Mengelola data karyawan, master data, absensi, pinjaman, ACC cuti/lembur, dan draft payroll. |
+| **Manager** | Atasan Departemen | Menyetujui (Approve) cuti/lembur bawahan satu departemen & review draft gaji divisi. |
+| **Finance** | Bagian Keuangan | Review payroll, otorisasi transfer gaji, status lunas (Paid), dan laporan keuangan payroll. |
+| **Employee** | Karyawan Staf | Mengakses **Portal Karyawan**: absensi pribadi, ajukan cuti/lembur, dan unduh slip gaji. |
+
+> 📘 Untuk penjelasan detail mengenai alur operasional dan pembagian peran, silakan baca:
+> - [Panduan Pengguna Pemula (USER_GUIDE.md)](USER_GUIDE.md)
+> - [Saran Hirarki Peran & Hak Akses (hierarchy_roles.md)](hierarchy_roles.md)
+
+---
+
+## 🛠️ Tech Stack & Dependencies
+
+- **Framework**: [Laravel 12.x](https://laravel.com) (PHP 8.2+)
+- **Authentication**: Laravel Breeze
+- **Styling & UI**: [Tailwind CSS 3.x](https://tailwindcss.com), Alpine.js
+- **PDF Engine**: [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf)
+- **Excel Import/Export**: [maatwebsite/excel](https://maatwebsite.nl/)
+- **Permissions**: [spatie/laravel-permission](https://spatie.be/docs/laravel-permission)
+- **Activity Logging**: [spatie/laravel-activitylog](https://spatie.be/docs/laravel-activitylog)
+- **Database**: MySQL / PostgreSQL / SQLite
+
+---
+
+## 🚀 Panduan Instalasi Lokal
+
+Ikuti langkah-langkah berikut untuk menjalankan project di komputer lokal:
+
+### 1. Prasyarat Sistem
+- PHP >= 8.2
+- Composer >= 2.x
+- Node.js & NPM >= 18.x
+- MySQL / MariaDB (atau SQLite)
+
+### 2. Clone Repository
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/eggadsyam/apayroll.git
+cd apayroll
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 3. Install Dependencies
+```bash
+# Install PHP packages
+composer install
 
-## Contributing
+# Install Javascript packages
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Konfigurasi Environment (`.env`)
+Salin file `.env.example` menjadi `.env`:
+```bash
+cp .env.example .env
+```
+Sesuaikan konfigurasi database pada file `.env`:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=apayroll
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Code of Conduct
+### 5. Generate Application Key & Storage Link
+```bash
+php artisan key:generate
+php artisan storage:link
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 6. Migrasi & Seeder Database
+Jalankan migrasi tabel dan pengisian data awal (role, akun default, komponen gaji, tarif pajak TER):
+```bash
+php artisan migrate:fresh --seed
+```
 
-## Security Vulnerabilities
+### 7. Jalankan Server Pengembangan
+Buka 2 terminal:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Terminal 1 (Backend Laravel):**
+```bash
+php artisan serve
+```
 
-## License
+**Terminal 2 (Vite Asset Bundler):**
+```bash
+npm run dev
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Aplikasi dapat diakses melalui browser di: `http://127.0.0.1:8000`
+
+---
+
+## 🔑 Akun Default (Hasil Seeder)
+
+Setelah menjalankan `php artisan migrate:fresh --seed`, Anda dapat masuk menggunakan akun demo berikut (Password default: `password`):
+
+| Role | Email | Password |
+|---|---|---|
+| **Super Admin** | `admin@payroll.com` | `password` |
+| **HRD Staff** | `hrd@payroll.com` | `password` |
+| **Finance Staff** | `finance@payroll.com` | `password` |
+| **Manager** | `manager@payroll.com` | `password` |
+| **Employee (Karyawan)** | `budi@payroll.com` | `password` |
+
+---
+
+## 🧪 Menjalankan Pengujian (Testing)
+
+Untuk memastikan seluruh fungsi berjalan dengan baik:
+```bash
+php artisan test
+```
+
+---
+
+## 📄 Lisensi
+
+Project ini dilisensikan di bawah [MIT License](LICENSE).
