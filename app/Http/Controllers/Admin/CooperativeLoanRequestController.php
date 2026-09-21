@@ -7,14 +7,18 @@ use App\Models\CooperativeLoanRequest;
 use App\Models\CooperativeRecord;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 
-class CooperativeLoanRequestController extends Controller
+class CooperativeLoanRequestController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('permission:cooperative_loan_request.view')->only(['index']);
-        $this->middleware('permission:cooperative_loan_request.approve')->only(['approve', 'reject']);
+        return [
+            new Middleware('permission:cooperative_loan_request.view', only: ['index']),
+            new Middleware('permission:cooperative_loan_request.approve', only: ['approve', 'reject']),
+        ];
     }
 
     public function index()

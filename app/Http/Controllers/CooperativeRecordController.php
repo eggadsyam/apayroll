@@ -6,14 +6,18 @@ use App\Http\Requests\StoreCooperativeRecordRequest;
 use App\Http\Requests\UpdateCooperativeRecordRequest;
 use App\Models\CooperativeRecord;
 use App\Models\Employee;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class CooperativeRecordController extends Controller
+class CooperativeRecordController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('permission:cooperative_record.view')->only(['index', 'show']);
-        $this->middleware('permission:cooperative_record.create')->only(['create', 'store']);
-        $this->middleware('permission:cooperative_record.edit')->only(['edit', 'update', 'destroy']);
+        return [
+            new Middleware('permission:cooperative_record.view', only: ['index', 'show']),
+            new Middleware('permission:cooperative_record.create', only: ['create', 'store']),
+            new Middleware('permission:cooperative_record.edit', only: ['edit', 'update', 'destroy']),
+        ];
     }
 
     public function index()
