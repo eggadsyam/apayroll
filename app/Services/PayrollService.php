@@ -4,9 +4,8 @@ namespace App\Services;
 
 use App\Models\Attendance;
 use App\Models\CompanySetting;
+use App\Models\CooperativeRecord;
 use App\Models\Employee;
-use App\Models\EmployeeLoan;
-use App\Models\EmployeeLoanPayment;
 use App\Models\Overtime;
 use App\Models\Payroll;
 use App\Models\PayrollDetail;
@@ -29,19 +28,6 @@ class PayrollService
         DB::transaction(function () use ($period) {
             $existingPayrolls = Payroll::where('payroll_period_id', $period->id)->get();
             foreach ($existingPayrolls as $p) {
-                $payments = EmployeeLoanPayment::where('payroll_id', $p->id)->get();
-                foreach ($payments as $payment) {
-                    $loan = $payment->employeeLoan;
-                    if ($loan) {
-                        $loan->remaining_balance += $payment->amount;
-                        $loan->paid_installments -= 1;
-                        if ($loan->remaining_balance > 0 && $loan->status === 'paid_off') {
-                            $loan->status = 'active';
-                        }
-                        $loan->save();
-                    }
-                    $payment->delete();
-                }
                 $p->delete();
             }
         });
@@ -97,7 +83,7 @@ class PayrollService
             ->get();
         $totalOtherDeduction = $deductions->sum('amount');
 
-        $loanDeduction = $this->calculateLoanDeduction($employee);
+        $cooperativeDeduction = $this->calculateCooperativeDeduction($employee, $period);
         $latePenalty = $this->calculateLatePenalty($employee, $period, $settings);
 
         // 7. PPh 21 (TER) Calculation
@@ -107,7 +93,7 @@ class PayrollService
         }
 
         // 8. Total Deductions
-        $totalDeduction = $totalOtherDeduction + $loanDeduction + $latePenalty + $taxAmount + array_sum($bpjsDeductions);
+        $totalDeduction = $totalOtherDeduction + $cooperativeDeduction + $latePenalty + $taxAmount + array_sum($bpjsDeductions);
 
         // 9. Net Salary
         $netSalary = $grossSalary - $totalDeduction;
@@ -127,7 +113,7 @@ class PayrollService
             'processed_at' => now(),
         ]);
 
-        $this->createPayrollDetails($payroll, $basicSalary, $earnings, $overtimeAmount, $deductions, $loanDeduction, $latePenalty, $taxAmount, $bpjsDeductions, $employee);
+        $this->createPayrollDetails($payroll, $basicSalary, $earnings, $overtimeAmount, $deductions, $cooperativeDeduction, $latePenalty, $taxAmount, $bpjsDeductions, $employee);
 
         return $payroll;
     }
@@ -204,7 +190,7 @@ class PayrollService
         return round($bruto * ($rate->percentage / 100), 2);
     }
 
-    private function createPayrollDetails($payroll, $basicSalary, $earnings, $overtime, $deductions, $loan, $late, $tax, $bpjs, $employee)
+    private function createPayrollDetails($payroll, $basicSalary, $earnings, $overtime, $deductions, $cooperativeDeduction, $late, $tax, $bpjs, $employee)
     {
         // Earnings
         PayrollDetail::create(['payroll_id' => $payroll->id, 'component_name' => 'Gaji Pokok', 'component_type' => 'earning', 'amount' => $basicSalary]);
@@ -242,9 +228,8 @@ class PayrollService
             PayrollDetail::create(['payroll_id' => $payroll->id, 'component_name' => 'PPh 21', 'component_type' => 'deduction', 'amount' => $tax]);
         }
 
-        if ($loan > 0) {
-            PayrollDetail::create(['payroll_id' => $payroll->id, 'component_name' => 'Kasbon', 'component_type' => 'deduction', 'amount' => $loan]);
-            $this->recordLoanPayment($employee, $payroll, $loan);
+        if ($cooperativeDeduction > 0) {
+            PayrollDetail::create(['payroll_id' => $payroll->id, 'component_name' => 'Potongan Koperasi', 'component_type' => 'deduction', 'amount' => $cooperativeDeduction]);
         }
 
         if ($late > 0) {
@@ -260,19 +245,11 @@ class PayrollService
             ->sum('amount');
     }
 
-    public function calculateLoanDeduction(Employee $employee): float
+    public function calculateCooperativeDeduction(Employee $employee, PayrollPeriod $period): float
     {
-        $activeLoans = EmployeeLoan::where('employee_id', $employee->id)
-            ->where('status', 'active')
-            ->where('remaining_balance', '>', 0)
-            ->orderBy('loan_date')
-            ->get();
-        $total = 0;
-        foreach ($activeLoans as $loan) {
-            $total += min($loan->installment, $loan->remaining_balance);
-        }
-
-        return $total;
+        return CooperativeRecord::where('employee_id', $employee->id)
+            ->whereBetween('date', [$period->start_date, $period->end_date])
+            ->sum('amount');
     }
 
     public function calculateLatePenalty(Employee $employee, PayrollPeriod $period, CompanySetting $settings): float
@@ -285,31 +262,6 @@ class PayrollService
             ->sum('late_minutes');
 
         return $totalLateMinutes * $settings->late_penalty_per_minute;
-    }
-
-    private function recordLoanPayment(Employee $employee, Payroll $payroll, float $amount): void
-    {
-        $activeLoans = EmployeeLoan::where('employee_id', $employee->id)
-            ->where('status', 'active')
-            ->where('remaining_balance', '>', 0)
-            ->orderBy('loan_date')
-            ->get();
-        $remaining = $amount;
-        foreach ($activeLoans as $loan) {
-            if ($remaining <= 0) {
-                break;
-            }
-            $payment = min($loan->installment, $loan->remaining_balance, $remaining);
-            EmployeeLoanPayment::create(['employee_loan_id' => $loan->id, 'payroll_id' => $payroll->id, 'amount' => $payment, 'payment_date' => now()->toDateString()]);
-            $loan->remaining_balance -= $payment;
-            $loan->paid_installments += 1;
-            if ($loan->remaining_balance <= 0) {
-                $loan->status = 'paid_off';
-                $loan->remaining_balance = 0;
-            }
-            $loan->save();
-            $remaining -= $payment;
-        }
     }
 
     public function submitForApproval(PayrollPeriod $period): void

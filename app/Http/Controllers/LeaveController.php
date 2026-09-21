@@ -17,7 +17,13 @@ class LeaveController extends Controller
         $query = Leave::with(['employee', 'leaveType']);
 
         $user = auth()->user();
-        if ($user->hasRole('manager') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd')) {
+        if ($user->hasRole('supervisor') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd') && ! $user->hasRole('manager')) {
+            $query->whereHas('employee', function ($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('supervisor_id', $user->employee->id);
+                }
+            });
+        } elseif ($user->hasRole('manager') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd')) {
             $query->whereHas('employee', function ($q) use ($user) {
                 if ($user->employee) {
                     $q->where('department_id', $user->employee->department_id);
@@ -40,7 +46,7 @@ class LeaveController extends Controller
 
         $query->where('end_date', '>=', $startDate)
             ->where('start_date', '<=', $endDate);
-        $leaves = $query->latest()->paginate(15);
+        $leaves = $query->latest()->paginate(10);
         $employees = Employee::active()->get();
         $departments = Department::all();
 
@@ -87,7 +93,20 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if (in_array($leaf->status, ['pending_manager', 'pending'])) {
+        if (in_array($leaf->status, ['pending', 'pending_supervisor'])) {
+            $isSupervisorForLeave = $user->hasRole('supervisor') && $user->employee && $user->employee->id == $leaf->employee->supervisor_id;
+
+            if ($isSupervisorForLeave || $user->hasRole('super_admin')) {
+                $leaf->update([
+                    'status' => 'pending_manager',
+                    'supervisor_approved_by' => $user->id,
+                ]);
+
+                return back()->with('success', 'Pengajuan cuti disetujui Supervisor, menunggu persetujuan Manager');
+            }
+        }
+
+        if (in_array($leaf->status, ['pending_manager', 'pending', 'pending_supervisor'])) {
             $isManagerForLeave = $user->hasRole('manager') && $user->employee && $user->employee->department_id == $leaf->employee->department_id;
 
             if ($isManagerForLeave || $user->hasRole('super_admin')) {
@@ -186,12 +205,15 @@ class LeaveController extends Controller
     public function reject(Leave $leaf)
     {
         $user = auth()->user();
+        $isSupervisorForLeave = $user->hasRole('supervisor') && $user->employee && $user->employee->id == $leaf->employee->supervisor_id;
         $isManagerForLeave = $user->hasRole('manager') && $user->employee && $user->employee->department_id == $leaf->employee->department_id;
         $isHrd = $user->hasRole('hrd');
         $isSuperAdmin = $user->hasRole('super_admin');
 
         $canReject = false;
-        if (in_array($leaf->status, ['pending', 'pending_manager']) && ($isManagerForLeave || $isSuperAdmin)) {
+        if (in_array($leaf->status, ['pending', 'pending_supervisor']) && ($isSupervisorForLeave || $isSuperAdmin)) {
+            $canReject = true;
+        } elseif (in_array($leaf->status, ['pending', 'pending_supervisor', 'pending_manager']) && ($isManagerForLeave || $isSuperAdmin)) {
             $canReject = true;
         } elseif ($leaf->status === 'pending_hrd' && ($isHrd || $isSuperAdmin)) {
             $canReject = true;

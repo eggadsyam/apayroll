@@ -43,6 +43,7 @@ class Employee extends Model
         'status',
         'photo',
         'shift_id',
+        'supervisor_id',
     ];
 
     protected function casts(): array
@@ -179,5 +180,15 @@ class Employee extends Model
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);
+    }
+
+    public function supervisor(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'supervisor_id');
+    }
+
+    public function subordinates(): HasMany
+    {
+        return $this->hasMany(Employee::class, 'supervisor_id');
     }
 }

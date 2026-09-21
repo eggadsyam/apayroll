@@ -22,6 +22,8 @@ class Overtime extends Model
         'amount',
         'status',
         'approved_by',
+        'supervisor_approved_by',
+        'manager_approved_by',
         'notes',
     ];
 

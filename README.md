@@ -34,15 +34,16 @@ Aplikasi ini dilengkapi dengan **Employee Self-Service (Portal Karyawan)** dan m
 ### 3. 📝 Pengajuan Cuti & Lembur (Leave & Overtime)
 - **Multi-level Approval Workflow**:
   - Pengajuan oleh Karyawan.
-  - Persetujuan Tahap 1 oleh **Manager / Atasan Langsung** per departemen.
+  - Persetujuan Tahap 1 oleh **Supervisor (Atasan Langsung)**.
+  - Persetujuan Tahap 2 oleh **Manager Departemen**.
   - Persetujuan Tahap Akhir oleh **HRD**.
 - Saldo dan kuota cuti tahunan terpantau secara real-time.
 - Perhitungan upah lembur otomatis sesuai ketentuan jam kerja.
 
-### 4. 💳 Pinjaman / Kasbon Karyawan (Employee Loans)
-- Pencatatan pengajuan pinjaman karyawan dan tenor cicilan.
+### 4. 🤝 Koperasi (Cooperative)
+- Pencatatan simpanan dan pengajuan pinjaman koperasi karyawan.
 - Pemotongan cicilan pinjaman otomatis setiap periode payroll diproses.
-- Riwayat pembayaran dan sisa saldo pinjaman tercatat transparan.
+- Riwayat pembayaran, simpanan, dan sisa saldo pinjaman tercatat transparan.
 
 ### 5. 💰 Penggajian Otomatis (Payroll Engine)
 - **Komponen Gaji Fleksibel**: Komponen tunjangan tetap, tunjangan tidak tetap, premi, insentif, dan potongan.
@@ -71,15 +72,16 @@ Aplikasi ini dilengkapi dengan **Employee Self-Service (Portal Karyawan)** dan m
 
 ## 👥 Hirarki Peran & Hak Akses (RBAC)
 
-Aplikasi memiliki 5 tingkatan peran dengan wewenang yang terpisah:
+Aplikasi memiliki 6 tingkatan peran dengan wewenang yang terpisah:
 
 | Peran | Deskripsi Singkat | Ruang Lingkup Akses |
 |---|---|---|
 | **Super Admin** | Administrator Sistem | Akses penuh ke seluruh menu, pengaturan perusahaan, manajemen user, dan log sistem. |
-| **HRD** | Bagian Personalia | Mengelola data karyawan, master data, absensi, pinjaman, ACC cuti/lembur, dan draft payroll. |
-| **Manager** | Atasan Departemen | Menyetujui (Approve) cuti/lembur bawahan satu departemen & review draft gaji divisi. |
+| **HRD** | Bagian Personalia | Mengelola data karyawan, master data, absensi, koperasi, ACC akhir cuti/lembur, dan draft payroll. |
+| **Manager** | Atasan Departemen | Menyetujui (Approve) Tahap 2 cuti/lembur bawahan satu departemen & review draft gaji divisi. |
+| **Supervisor** | Atasan Langsung | Menyetujui (Approve) Tahap 1 cuti/lembur bawahan langsung (satu tim). |
 | **Finance** | Bagian Keuangan | Review payroll, otorisasi transfer gaji, status lunas (Paid), dan laporan keuangan payroll. |
-| **Employee** | Karyawan Staf | Mengakses **Portal Karyawan**: absensi pribadi, ajukan cuti/lembur, dan unduh slip gaji. |
+| **Employee** | Karyawan Staf | Mengakses **Portal Karyawan**: absensi pribadi, ajukan cuti/lembur/pinjaman, dan unduh slip gaji. |
 
 > 📘 Untuk penjelasan detail mengenai alur operasional dan pembagian peran, silakan baca:
 > - [Panduan Pengguna Pemula (USER_GUIDE.md)](USER_GUIDE.md)
@@ -179,6 +181,7 @@ Setelah menjalankan `php artisan migrate:fresh --seed`, Anda dapat masuk menggun
 | **HRD Staff** | `hrd@payroll.com` | `password` |
 | **Finance Staff** | `finance@payroll.com` | `password` |
 | **Manager** | `manager@payroll.com` | `password` |
+| **Supervisor** | `supervisor@payroll.com` | `password` |
 | **Employee (Karyawan)** | `budi@payroll.com` | `password` |
 
 ---

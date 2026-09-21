@@ -24,6 +24,7 @@ class EmployeeRequest extends FormRequest
             'email' => 'required|email|unique:employees,email,'.$this->route('employee')?->id,
             'department_id' => 'required|exists:departments,id',
             'position_id' => 'required|exists:positions,id',
+            'supervisor_id' => 'nullable|exists:employees,id',
             'employment_status_id' => 'required|exists:employment_statuses,id',
             'shift_id' => 'required|exists:shifts,id',
             'join_date' => 'required|date',

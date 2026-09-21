@@ -33,7 +33,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">{{ $leaveTypes->links() }}</div>
+            <div class="mt-3">{{ $leaveTypes->appends(request()->query())->links() }}</div>
         </div>
     </div>
 </div>

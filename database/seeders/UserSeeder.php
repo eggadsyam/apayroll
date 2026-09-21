@@ -62,5 +62,15 @@ class UserSeeder extends Seeder
             ]
         );
         $employee->assignRole('employee');
+
+        // Supervisor
+        $supervisor = User::firstOrCreate(
+            ['email' => 'supervisor@payroll.com'],
+            [
+                'name' => 'Supervisor',
+                'password' => Hash::make('password'),
+            ]
+        );
+        $supervisor->assignRole('supervisor');
     }
 }

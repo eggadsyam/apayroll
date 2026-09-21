@@ -23,7 +23,7 @@ class EmployeeSalaryController extends Controller
                         ->orWhere('employee_code', 'like', "%{$search}%");
                 });
             })
-            ->paginate(15)
+            ->paginate(10)
             ->withQueryString();
 
         $employees->getCollection()->transform(function ($employee) {

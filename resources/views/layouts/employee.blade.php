@@ -124,6 +124,11 @@
                         <i class="fas fa-file-invoice-dollar me-2 fa-fw"></i> Slip Gaji
                     </a>
                 </li>
+                <li class="{{ request()->routeIs('portal.cooperative-loans.*') ? 'active' : '' }}">
+                    <a href="{{ route('portal.cooperative-loans.index') ?? '#' }}">
+                        <i class="fas fa-hand-holding-usd me-2 fa-fw"></i> Pengajuan Koperasi
+                    </a>
+                </li>
                 
 
             </ul>

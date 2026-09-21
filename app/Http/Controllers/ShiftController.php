@@ -13,7 +13,7 @@ class ShiftController extends Controller
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
         }
-        $shifts = $query->paginate(15);
+        $shifts = $query->paginate(10);
 
         return view('shifts.index', compact('shifts'));
     }

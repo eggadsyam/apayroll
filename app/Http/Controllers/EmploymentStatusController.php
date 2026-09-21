@@ -14,7 +14,7 @@ class EmploymentStatusController extends Controller
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
         }
-        $statuses = $query->paginate(15);
+        $statuses = $query->paginate(10);
 
         return view('employment-statuses.index', compact('statuses'));
     }

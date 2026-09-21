@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\CooperativeLoanRequestController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\CooperativeRecordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\EmployeeLoanController;
 use App\Http\Controllers\EmployeePortalController;
 use App\Http\Controllers\EmployeeSalaryController;
 use App\Http\Controllers\EmploymentStatusController;
@@ -49,7 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // ============================================================
 // Admin Routes (Auth Required)
 // ============================================================
-Route::middleware(['auth', 'verified', 'role:super_admin|hrd|finance|manager'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:super_admin|hrd|finance|manager|supervisor'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -106,9 +107,12 @@ Route::middleware(['auth', 'verified', 'role:super_admin|hrd|finance|manager'])-
     Route::resource('leaves', LeaveController::class);
 
     // --------------------------------------------------------
-    // Pinjaman Karyawan
+    // Pencatatan Koperasi & Pengajuan
     // --------------------------------------------------------
-    Route::resource('employee-loans', EmployeeLoanController::class);
+    Route::resource('cooperative-records', CooperativeRecordController::class);
+    Route::get('cooperative-loan-requests', [CooperativeLoanRequestController::class, 'index'])->name('cooperative-loan-requests.index');
+    Route::post('cooperative-loan-requests/{loanRequest}/approve', [CooperativeLoanRequestController::class, 'approve'])->name('cooperative-loan-requests.approve');
+    Route::post('cooperative-loan-requests/{loanRequest}/reject', [CooperativeLoanRequestController::class, 'reject'])->name('cooperative-loan-requests.reject');
 
     // --------------------------------------------------------
     // Payroll
@@ -173,7 +177,11 @@ Route::middleware(['auth'])->prefix('portal')->name('portal.')->group(function (
     Route::get('/overtime', [EmployeePortalController::class, 'overtime'])->name('overtime');
     Route::get('/payslip', [EmployeePortalController::class, 'payslip'])->name('payslip');
     Route::get('/payslip/{payroll}/pdf', [EmployeePortalController::class, 'downloadPayslip'])->name('payslip.pdf');
-    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'portalIndex'])->name('notifications.index');
+    Route::get('/notifications', [NotificationController::class, 'portalIndex'])->name('notifications.index');
+
+    // Portal Cooperative Loans
+    Route::get('/cooperative-loans', [App\Http\Controllers\Portal\CooperativeLoanRequestController::class, 'index'])->name('cooperative-loans.index');
+    Route::post('/cooperative-loans', [App\Http\Controllers\Portal\CooperativeLoanRequestController::class, 'store'])->name('cooperative-loans.store');
 });
 
 require __DIR__.'/auth.php';

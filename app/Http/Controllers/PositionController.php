@@ -14,7 +14,7 @@ class PositionController extends Controller
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
         }
-        $positions = $query->paginate(15);
+        $positions = $query->paginate(10);
 
         return view('positions.index', compact('positions'));
     }

@@ -30,7 +30,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">{{ $payrolls->links() }}</div>
+            <div class="mt-3">{{ $payrolls->appends(request()->query())->links() }}</div>
         </div>
     </div>
 </div>

@@ -36,7 +36,7 @@ class EmployeeController extends Controller
             $query->where('employment_status_id', $request->status_id);
         }
 
-        $employees = $query->paginate(15);
+        $employees = $query->paginate(10);
         $departments = Department::all();
 
         return view('employees.index', compact('employees', 'departments'));
@@ -48,8 +48,9 @@ class EmployeeController extends Controller
         $positions = Position::all();
         $employmentStatuses = EmploymentStatus::all();
         $shifts = Shift::all();
+        $supervisors = Employee::active()->orderBy('name')->get();
 
-        return view('employees.create', compact('departments', 'positions', 'employmentStatuses', 'shifts'));
+        return view('employees.create', compact('departments', 'positions', 'employmentStatuses', 'shifts', 'supervisors'));
     }
 
     public function store(EmployeeRequest $request)
@@ -67,7 +68,7 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee)
     {
-        $employee->load(['department', 'position', 'employmentStatus', 'shift', 'salaryComponents.salaryComponent']);
+        $employee->load(['department', 'position', 'employmentStatus', 'shift', 'salaryComponents.salaryComponent', 'supervisor']);
 
         return view('employees.show', compact('employee'));
     }
@@ -78,8 +79,9 @@ class EmployeeController extends Controller
         $positions = Position::all();
         $employmentStatuses = EmploymentStatus::all();
         $shifts = Shift::all();
+        $supervisors = Employee::active()->where('id', '!=', $employee->id)->orderBy('name')->get();
 
-        return view('employees.edit', compact('employee', 'departments', 'positions', 'employmentStatuses', 'shifts'));
+        return view('employees.edit', compact('employee', 'departments', 'positions', 'employmentStatuses', 'shifts', 'supervisors'));
     }
 
     public function update(EmployeeRequest $request, Employee $employee)

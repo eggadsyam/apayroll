@@ -14,7 +14,7 @@ class DepartmentController extends Controller
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
         }
-        $departments = $query->paginate(15);
+        $departments = $query->paginate(10);
 
         return view('departments.index', compact('departments'));
     }

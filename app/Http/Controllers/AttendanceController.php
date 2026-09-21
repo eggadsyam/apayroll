@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Imports\AttendanceImport;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\Overtime;
 use App\Services\AttendanceService;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -13,7 +14,29 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Attendance::with('employee.department');
+        $query = Attendance::with('employee.department')
+            ->select('attendances.*')
+            ->addSelect([
+                'approved_overtime_hours' => Overtime::selectRaw('SUM(hours)')
+                    ->whereColumn('employee_id', 'attendances.employee_id')
+                    ->whereColumn('date', 'attendances.date')
+                    ->where('status', 'approved'),
+            ]);
+        $user = auth()->user();
+
+        if ($user->hasRole('supervisor') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd') && ! $user->hasRole('manager')) {
+            $query->whereHas('employee', function ($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('supervisor_id', $user->employee->id);
+                }
+            });
+        } elseif ($user->hasRole('manager') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd')) {
+            $query->whereHas('employee', function ($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('department_id', $user->employee->department_id);
+                }
+            });
+        }
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
@@ -29,7 +52,7 @@ class AttendanceController extends Controller
             $query->where('status', $request->status);
         }
 
-        $attendances = $query->latest('date')->paginate(20);
+        $attendances = $query->latest('date')->paginate(10);
         $employees = Employee::active()->get();
 
         return view('attendances.index', compact('attendances', 'employees'));

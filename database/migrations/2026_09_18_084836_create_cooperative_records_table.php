@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employee_loan_payments', function (Blueprint $table) {
+        Schema::create('cooperative_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_loan_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('payroll_id')->nullable()->constrained('payrolls')->nullOnDelete();
+            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
+            $table->date('date');
             $table->decimal('amount', 15, 2);
-            $table->date('payment_date');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('employee_loan_payments');
+        Schema::dropIfExists('cooperative_records');
     }
 };

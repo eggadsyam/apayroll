@@ -17,7 +17,7 @@ class PayslipController extends Controller
 
         $payrolls = $selectedPeriod ? Payroll::where('payroll_period_id', $selectedPeriod->id)
             ->with(['employee.department', 'employee.position'])
-            ->paginate(20) : collect();
+            ->paginate(10)->withQueryString() : collect();
 
         return view('payslips.index', compact('periods', 'selectedPeriod', 'payrolls'));
     }

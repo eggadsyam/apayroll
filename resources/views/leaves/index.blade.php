@@ -94,7 +94,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">{{ $leaves->links() }}</div>
+            <div class="mt-3">{{ $leaves->appends(request()->query())->links() }}</div>
         </div>
     </div>
 </div>

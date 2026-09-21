@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Attendance;
+use App\Models\Overtime;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -24,6 +25,13 @@ class AttendanceReportExport implements FromCollection, ShouldAutoSize, WithHead
     public function collection()
     {
         return Attendance::with(['employee.department'])
+            ->select('attendances.*')
+            ->addSelect([
+                'approved_overtime_hours' => Overtime::selectRaw('SUM(hours)')
+                    ->whereColumn('employee_id', 'attendances.employee_id')
+                    ->whereColumn('date', 'attendances.date')
+                    ->where('status', 'approved'),
+            ])
             ->whereBetween('date', [$this->startDate, $this->endDate])
             ->orderBy('date', 'asc')
             ->get();
@@ -62,7 +70,7 @@ class AttendanceReportExport implements FromCollection, ShouldAutoSize, WithHead
             ucfirst($attendance->status),
             $attendance->late_minutes,
             $attendance->working_hours,
-            $attendance->overtime_hours,
+            $attendance->approved_overtime_hours ?? $attendance->overtime_hours ?? 0,
         ];
     }
 }

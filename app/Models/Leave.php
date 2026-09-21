@@ -21,6 +21,7 @@ class Leave extends Model
         'status',
         'approved_by',
         'manager_approved_by',
+        'supervisor_approved_by',
     ];
 
     protected function casts(): array

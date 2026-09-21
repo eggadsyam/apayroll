@@ -12,17 +12,27 @@ Peran dasar untuk semua staf yang bekerja di perusahaan. Karyawan hanya memiliki
   - Mengunduh/melihat slip gaji sendiri.
 - **Akses yang DILARANG:** Tidak boleh masuk ke halaman Dashboard Admin (Data karyawan lain, penggajian, laporan, dll).
 
-## 2. Manager / Supervisor (Atasan Langsung)
+## 2. Supervisor (Atasan Langsung / Level 1)
+Supervisor bertanggung jawab atas sekelompok tim dalam satu departemen.
+- **Akses yang diberikan:**
+  - Sama dengan Karyawan (memiliki Portal Mandiri untuk dirinya sendiri).
+  - Bisa masuk ke Admin Dashboard dengan akses **terbatas**.
+  - **Melihat Karyawan:** Hanya bisa melihat daftar dan detail karyawan yang menjadi **bawahannya langsung** (berdasarkan relasi `supervisor_id`).
+  - **Persetujuan (Approval) Level 1:** Menyetujui (ACC) atau menolak pengajuan **Cuti** dan **Lembur** untuk bawahan langsungnya (status menjadi `pending_manager`).
+  - **Laporan (Opsional):** Melihat laporan absensi untuk timnya saja.
+- **Akses yang DILARANG:** Tidak bisa melihat gaji bawahan, tidak bisa menambah karyawan baru, dan tidak bisa melihat data di luar timnya.
+
+## 3. Manager (Atasan Departemen / Level 2)
 Manager adalah atasan dari satu departemen tertentu (misalnya Manager IT, Manager Marketing).
 - **Akses yang diberikan:**
   - Sama dengan Karyawan (memiliki Portal Mandiri untuk dirinya sendiri).
   - Bisa masuk ke Admin Dashboard dengan akses **terbatas**.
   - **Melihat Karyawan:** Hanya bisa melihat daftar dan detail karyawan yang berada **di satu departemen** dengannya.
-  - **Persetujuan (Approval) Level 1:** Menyetujui (ACC) atau menolak pengajuan **Cuti** dan **Lembur** khusus untuk bawahan di departemennya saja.
-  - **Laporan (Opsional):** Melihat laporan absensi untuk timnya saja (untuk evaluasi kinerja).
+  - **Persetujuan (Approval) Level 2:** Menyetujui (ACC) atau menolak pengajuan **Cuti** dan **Lembur** untuk departemennya (setelah di-ACC oleh Supervisor, status menjadi `pending_hrd`).
+  - **Laporan (Opsional):** Melihat laporan absensi untuk departemennya.
 - **Akses yang DILARANG:** Tidak bisa melihat gaji bawahan, tidak bisa menambah karyawan baru, dan tidak bisa melihat data dari departemen lain.
 
-## 3. HRD (Human Resources Department)
+## 4. HRD (Human Resources Department)
 HRD adalah pusat pengelolaan sumber daya manusia dan operasional harian perusahaan.
 - **Akses yang diberikan:**
   - Mengelola (CRUD) seluruh master data: Karyawan, Departemen, Jabatan, dll.
@@ -32,7 +42,7 @@ HRD adalah pusat pengelolaan sumber daya manusia dan operasional harian perusaha
   - Mencetak laporan absensi dan cuti seluruh perusahaan.
 - **Akses yang DILARANG (Opsional/Tergantung Perusahaan):** Tidak memiliki akses untuk melihat nominal gaji atau menjalankan proses Payroll bulanan (jika dipisah dengan Finance).
 
-## 4. Finance / Payroll
+## 5. Finance / Payroll
 Staf keuangan yang khusus mengurus penggajian dan pajak (terkadang digabung dengan HRD, tetapi idealnya dipisah).
 - **Akses yang diberikan:**
   - Mengelola komponen gaji (Tunjangan, Potongan).
@@ -41,7 +51,7 @@ Staf keuangan yang khusus mengurus penggajian dan pajak (terkadang digabung deng
   - Mencetak dan mengekspor Laporan Gaji (Bank Transfer List, dsb).
 - **Akses yang DILARANG:** Tidak perlu repot mengurus persetujuan cuti atau input absensi (karena itu ranah HRD).
 
-## 5. Super Admin / Direktur
+## 6. Super Admin / Direktur
 Pemilik sistem yang memiliki kekuasaan penuh (God Mode).
 - **Akses yang diberikan:**
   - Memiliki **SEMUA** hak akses dari semua role.

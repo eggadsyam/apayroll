@@ -38,7 +38,7 @@ class EmployeePortalController extends Controller
     public function attendance()
     {
         $attendances = Attendance::where('employee_id', auth()->user()->employee_id)
-            ->latest('date')->paginate(15);
+            ->latest('date')->paginate(10);
 
         return view('portal.attendance', compact('attendances'));
     }
@@ -46,7 +46,7 @@ class EmployeePortalController extends Controller
     public function leave()
     {
         $leaves = Leave::where('employee_id', auth()->user()->employee_id)
-            ->with('leaveType')->latest()->paginate(15);
+            ->with('leaveType')->latest()->paginate(10);
         $leaveTypes = LeaveType::all();
 
         return view('portal.leave.index', compact('leaves', 'leaveTypes'));
@@ -61,18 +61,24 @@ class EmployeePortalController extends Controller
             'reason' => 'required|string',
         ]);
         $validated['employee_id'] = auth()->user()->employee_id;
-        $validated['status'] = 'pending_manager';
+        $validated['status'] = 'pending_supervisor';
         $validated['days'] = Carbon::parse($validated['start_date'])->diffInDays(Carbon::parse($validated['end_date'])) + 1;
 
         $leave = Leave::create($validated);
 
-        // Notify HRD and Manager
+        // Notify Supervisor, Manager and HRD
+        $supervisorId = auth()->user()->employee->supervisor_id ?? null;
         $departmentId = auth()->user()->employee->department_id ?? null;
+
+        $supervisors = User::role('supervisor')->whereHas('employee', function ($q) use ($supervisorId) {
+            $q->where('id', $supervisorId);
+        })->get();
+
         $managers = User::role('manager')->whereHas('employee', function ($q) use ($departmentId) {
             $q->where('department_id', $departmentId);
         })->get();
         $hrds = User::role('hrd')->get();
-        $recipients = $managers->merge($hrds);
+        $recipients = $supervisors->merge($managers)->merge($hrds);
 
         Notification::send($recipients, new LeaveNotification(
             'Pengajuan Cuti Baru',
@@ -86,7 +92,7 @@ class EmployeePortalController extends Controller
     public function overtime()
     {
         $overtimes = Overtime::where('employee_id', auth()->user()->employee_id)
-            ->latest('date')->paginate(15);
+            ->latest('date')->paginate(10);
 
         return view('portal.overtime', compact('overtimes'));
     }
@@ -94,7 +100,7 @@ class EmployeePortalController extends Controller
     public function payslip()
     {
         $payrolls = Payroll::where('employee_id', auth()->user()->employee_id)
-            ->with('payrollPeriod')->latest()->paginate(15);
+            ->with('payrollPeriod')->latest()->paginate(10);
 
         return view('portal.payslip', compact('payrolls'));
     }

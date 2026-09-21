@@ -28,7 +28,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">{{ $overtimes->links() }}</div>
+            <div class="mt-3">{{ $overtimes->appends(request()->query())->links() }}</div>
         </div>
     </div>
 </div>

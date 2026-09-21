@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employee_loans', function (Blueprint $table) {
+        Schema::create('cooperative_loan_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
-            $table->date('loan_date');
             $table->decimal('amount', 15, 2);
-            $table->decimal('installment', 15, 2);
-            $table->decimal('remaining_balance', 15, 2);
-            $table->integer('total_installments');
-            $table->integer('paid_installments')->default(0);
-            $table->enum('status', ['active', 'paid_off', 'cancelled'])->default('active');
+            $table->integer('tenor_months')->default(1);
             $table->text('notes')->nullable();
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('admin_notes')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('employee_loans');
+        Schema::dropIfExists('cooperative_loan_requests');
     }
 };

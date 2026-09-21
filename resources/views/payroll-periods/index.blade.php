@@ -83,7 +83,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">{{ $periods->links() }}</div>
+            <div class="mt-3">{{ $periods->appends(request()->query())->links() }}</div>
         </div>
     </div>
 </div>

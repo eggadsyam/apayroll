@@ -89,7 +89,7 @@
                                 </td>
                                 <td>{{ $attendance->late_minutes ?? 0 }}</td>
                                 <td>{{ $attendance->working_hours ?? 0 }}</td>
-                                <td>{{ $attendance->overtime_hours ?? 0 }}</td>
+                                <td>{{ $attendance->approved_overtime_hours ?? $attendance->overtime_hours ?? 0 }}</td>
                                 <td>
                                     <a href="{{ route('attendances.edit', $attendance->id) }}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit"></i>

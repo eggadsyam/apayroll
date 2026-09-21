@@ -13,7 +13,7 @@ class NotificationController extends Controller
      */
     public function index(Request $request): View
     {
-        $notifications = $request->user()->notifications()->paginate(15);
+        $notifications = $request->user()->notifications()->paginate(10);
 
         return view('notifications.index', compact('notifications'));
     }
@@ -23,7 +23,7 @@ class NotificationController extends Controller
      */
     public function portalIndex(Request $request): View
     {
-        $notifications = $request->user()->notifications()->paginate(15);
+        $notifications = $request->user()->notifications()->paginate(10);
 
         return view('notifications.portal', compact('notifications'));
     }

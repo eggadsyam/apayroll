@@ -18,11 +18,25 @@ class PayrollController extends Controller
             ? PayrollPeriod::findOrFail($request->period_id)
             : PayrollPeriod::latest()->first();
 
-        $payrolls = $selectedPeriod
-            ? Payroll::where('payroll_period_id', $selectedPeriod->id)
-                ->with(['employee.department', 'employee.position'])
-                ->paginate(20)
-            : collect();
+        $payrollsQuery = Payroll::where('payroll_period_id', $selectedPeriod?->id)
+            ->with(['employee.department', 'employee.position']);
+
+        $user = auth()->user();
+        if ($user->hasRole('supervisor') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd') && ! $user->hasRole('finance') && ! $user->hasRole('manager')) {
+            $payrollsQuery->whereHas('employee', function ($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('supervisor_id', $user->employee->id);
+                }
+            });
+        } elseif ($user->hasRole('manager') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd') && ! $user->hasRole('finance')) {
+            $payrollsQuery->whereHas('employee', function ($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('department_id', $user->employee->department_id);
+                }
+            });
+        }
+
+        $payrolls = $selectedPeriod ? $payrollsQuery->paginate(10)->withQueryString() : collect();
 
         return view('payrolls.index', compact('periods', 'selectedPeriod', 'payrolls'));
     }

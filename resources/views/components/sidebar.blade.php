@@ -84,15 +84,20 @@
         </li>
         @endcan
 
-        @can('loan.view')
-        <li class="{{ request()->routeIs('employee-loans.*') ? 'active' : '' }}">
-            <a href="#loanSubmenu" data-bs-toggle="collapse" aria-expanded="{{ request()->routeIs('employee-loans.*') ? 'true' : 'false' }}" class="dropdown-toggle d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-credit-card me-2 fa-fw"></i> Keuangan</span>
+        @can('cooperative_record.view')
+        <li class="{{ request()->routeIs('cooperative-records.*', 'cooperative-loan-requests.*') ? 'active' : '' }}">
+            <a href="#cooperativeRecordSubmenu" data-bs-toggle="collapse" aria-expanded="{{ request()->routeIs('cooperative-records.*', 'cooperative-loan-requests.*') ? 'true' : 'false' }}" class="dropdown-toggle d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-hand-holding-usd me-2 fa-fw"></i> Pencatatan Koperasi</span>
             </a>
-            <ul class="collapse list-unstyled {{ request()->routeIs('employee-loans.*') ? 'show' : '' }}" id="loanSubmenu">
-                <li class="{{ request()->routeIs('employee-loans.index') ? 'active' : '' }}">
-                    <a href="{{ route('employee-loans.index') ?? '#' }}">Pinjaman Karyawan</a>
+            <ul class="collapse list-unstyled {{ request()->routeIs('cooperative-records.*', 'cooperative-loan-requests.*') ? 'show' : '' }}" id="cooperativeRecordSubmenu">
+                <li class="{{ request()->routeIs('cooperative-records.index') ? 'active' : '' }}">
+                    <a href="{{ route('cooperative-records.index') ?? '#' }}">Potongan Koperasi</a>
                 </li>
+                @can('cooperative_loan_request.view')
+                <li class="{{ request()->routeIs('cooperative-loan-requests.index') ? 'active' : '' }}">
+                    <a href="{{ route('cooperative-loan-requests.index') ?? '#' }}">Persetujuan Pengajuan</a>
+                </li>
+                @endcan
             </ul>
         </li>
         @endcan

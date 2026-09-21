@@ -28,7 +28,7 @@
                     <tbody>
                         @forelse($payrolls as $index => $payroll)
                             <tr>
-                                <td>{{ $index + 1 }}</td><td>{{ $payroll->employee->name }}</td>
+                                <td>{{ $payrolls->firstItem() + $index }}</td><td>{{ $payroll->employee->name }}</td>
                                 <td>Rp{{ number_format($payroll->net_salary, 0, ',', '.') }}</td>
                                 <td>
                                     <a href="{{ route('payslips.show', $payroll->id) }}" class="btn btn-sm btn-info text-white">Lihat Slip</a>
@@ -40,6 +40,9 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+            <div class="mt-3">
+                {{ $payrolls->links() }}
             </div>
             @else
                 <p class="text-center">Silakan pilih periode penggajian</p>

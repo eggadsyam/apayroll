@@ -52,7 +52,7 @@
                 </table>
             </div>
             <div class="mt-3">
-                {{ $employees->links() }}
+                {{ $employees->appends(request()->query())->links() }}
             </div>
         </div>
     </div>

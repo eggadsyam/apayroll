@@ -9,7 +9,7 @@ class SalaryComponentController extends Controller
 {
     public function index()
     {
-        $components = SalaryComponent::orderBy('sort_order')->paginate(15);
+        $components = SalaryComponent::orderBy('sort_order')->paginate(10);
 
         return view('salary-components.index', compact('components'));
     }

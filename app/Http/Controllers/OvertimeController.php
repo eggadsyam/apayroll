@@ -13,6 +13,21 @@ class OvertimeController extends Controller
     public function index(Request $request)
     {
         $query = Overtime::with('employee');
+        $user = auth()->user();
+
+        if ($user->hasRole('supervisor') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd') && ! $user->hasRole('manager')) {
+            $query->whereHas('employee', function ($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('supervisor_id', $user->employee->id);
+                }
+            });
+        } elseif ($user->hasRole('manager') && ! $user->hasRole('super_admin') && ! $user->hasRole('hrd')) {
+            $query->whereHas('employee', function ($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('department_id', $user->employee->department_id);
+                }
+            });
+        }
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
@@ -28,7 +43,7 @@ class OvertimeController extends Controller
             $query->where('status', $request->status);
         }
 
-        $overtimes = $query->latest('date')->paginate(15);
+        $overtimes = $query->latest('date')->paginate(10);
         $employees = Employee::active()->get();
 
         return view('overtimes.index', compact('overtimes', 'employees'));
@@ -51,17 +66,52 @@ class OvertimeController extends Controller
 
     public function approve(Overtime $overtime)
     {
-        $overtime->update(['status' => 'approved', 'approved_by' => auth()->id()]);
+        $user = auth()->user();
 
-        if ($overtime->employee->user) {
-            $overtime->employee->user->notify(new OvertimeNotification(
-                'Lembur Disetujui',
-                'Data lembur anda pada tanggal '.$overtime->date->format('d M Y').' telah disetujui.',
-                route('portal.overtime')
-            ));
+        if (in_array($overtime->status, ['pending', 'pending_supervisor'])) {
+            $isSupervisorForLeave = $user->hasRole('supervisor') && $user->employee && $user->employee->id == $overtime->employee->supervisor_id;
+
+            if ($isSupervisorForLeave || $user->hasRole('super_admin')) {
+                $overtime->update([
+                    'status' => 'pending_manager',
+                    'supervisor_approved_by' => $user->id,
+                ]);
+
+                return back()->with('success', 'Lembur disetujui Supervisor, menunggu persetujuan Manager');
+            }
         }
 
-        return back()->with('success', 'Lembur berhasil disetujui');
+        if (in_array($overtime->status, ['pending_manager', 'pending', 'pending_supervisor'])) {
+            $isManagerForLeave = $user->hasRole('manager') && $user->employee && $user->employee->department_id == $overtime->employee->department_id;
+
+            if ($isManagerForLeave || $user->hasRole('super_admin')) {
+                $overtime->update([
+                    'status' => 'pending_hrd',
+                    'manager_approved_by' => $user->id,
+                ]);
+
+                return back()->with('success', 'Lembur disetujui Manager, menunggu persetujuan HRD');
+            }
+        }
+
+        if ($overtime->status === 'pending_hrd' || $user->hasRole(['hrd', 'super_admin'])) {
+            $overtime->update([
+                'status' => 'approved',
+                'approved_by' => $user->id,
+            ]);
+
+            if ($overtime->employee->user) {
+                $overtime->employee->user->notify(new OvertimeNotification(
+                    'Lembur Disetujui',
+                    'Data lembur anda pada tanggal '.$overtime->date->format('d M Y').' telah disetujui.',
+                    route('portal.overtime')
+                ));
+            }
+
+            return back()->with('success', 'Lembur berhasil disetujui');
+        }
+
+        return back()->with('error', 'Tidak dapat memproses persetujuan');
     }
 
     public function edit(Overtime $overtime)
@@ -92,16 +142,35 @@ class OvertimeController extends Controller
 
     public function reject(Overtime $overtime)
     {
-        $overtime->update(['status' => 'rejected']);
+        $user = auth()->user();
+        $isSupervisorForLeave = $user->hasRole('supervisor') && $user->employee && $user->employee->id == $overtime->employee->supervisor_id;
+        $isManagerForLeave = $user->hasRole('manager') && $user->employee && $user->employee->department_id == $overtime->employee->department_id;
+        $isHrd = $user->hasRole('hrd');
+        $isSuperAdmin = $user->hasRole('super_admin');
 
-        if ($overtime->employee->user) {
-            $overtime->employee->user->notify(new OvertimeNotification(
-                'Lembur Ditolak',
-                'Data lembur anda pada tanggal '.$overtime->date->format('d M Y').' telah ditolak.',
-                route('portal.overtime')
-            ));
+        $canReject = false;
+        if (in_array($overtime->status, ['pending', 'pending_supervisor']) && ($isSupervisorForLeave || $isSuperAdmin)) {
+            $canReject = true;
+        } elseif (in_array($overtime->status, ['pending', 'pending_supervisor', 'pending_manager']) && ($isManagerForLeave || $isSuperAdmin)) {
+            $canReject = true;
+        } elseif ($overtime->status === 'pending_hrd' && ($isHrd || $isSuperAdmin)) {
+            $canReject = true;
         }
 
-        return back()->with('success', 'Lembur berhasil ditolak');
+        if ($canReject) {
+            $overtime->update(['status' => 'rejected']);
+
+            if ($overtime->employee->user) {
+                $overtime->employee->user->notify(new OvertimeNotification(
+                    'Lembur Ditolak',
+                    'Data lembur anda pada tanggal '.$overtime->date->format('d M Y').' telah ditolak.',
+                    route('portal.overtime')
+                ));
+            }
+
+            return back()->with('success', 'Lembur berhasil ditolak');
+        }
+
+        return back()->with('error', 'Tidak memiliki akses untuk menolak lembur ini');
     }
 }

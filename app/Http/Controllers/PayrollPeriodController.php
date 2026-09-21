@@ -21,7 +21,7 @@ class PayrollPeriodController extends Controller
             $query->where('status', $request->status);
         }
 
-        $periods = $query->latest()->paginate(15)->withQueryString();
+        $periods = $query->latest()->paginate(10)->withQueryString();
         $allPeriods = PayrollPeriod::orderBy('year', 'desc')->orderBy('month', 'desc')->get();
 
         return view('payroll-periods.index', compact('periods', 'allPeriods'));

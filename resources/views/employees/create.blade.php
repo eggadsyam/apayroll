@@ -87,6 +87,16 @@
                             @error('department_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Supervisor / Atasan Langsung</label>
+                            <select class="form-select @error('supervisor_id') is-invalid @enderror" name="supervisor_id">
+                                <option value="">Tidak ada supervisor</option>
+                                @foreach($supervisors as $sup)
+                                    <option value="{{ $sup->id }}" {{ old('supervisor_id') == $sup->id ? 'selected' : '' }}>{{ $sup->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('supervisor_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Jabatan <span class="text-danger">*</span></label>
                             <select class="form-select @error('position_id') is-invalid @enderror" name="position_id" required>
                                 <option value="">Pilih Jabatan</option>

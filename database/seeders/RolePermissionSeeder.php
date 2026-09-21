@@ -37,8 +37,8 @@ class RolePermissionSeeder extends Seeder
             'setting.view', 'setting.edit',
             // User
             'user.view', 'user.create', 'user.edit', 'user.delete',
-            // Loan
-            'loan.view', 'loan.create', 'loan.edit',
+            // Cooperative Record
+            'cooperative_record.view', 'cooperative_record.create', 'cooperative_record.edit', 'cooperative_loan_request.view', 'cooperative_loan_request.approve',
         ];
 
         foreach ($permissions as $permission) {
@@ -58,14 +58,14 @@ class RolePermissionSeeder extends Seeder
             'salary.view', 'salary.create', 'salary.edit',
             'payroll.view', 'payroll.create', 'payroll.process',
             'report.view', 'report.export',
-            'loan.view', 'loan.create', 'loan.edit',
+            'cooperative_record.view', 'cooperative_record.create', 'cooperative_record.edit', 'cooperative_loan_request.view', 'cooperative_loan_request.approve',
         ]);
 
         $financeRole = Role::findOrCreate('finance', 'web');
         $financeRole->givePermissionTo([
             'payroll.view', 'payroll.approve', 'payroll.pay',
             'report.view', 'report.export',
-            'loan.view',
+            'cooperative_record.view',
         ]);
 
         $managerRole = Role::findOrCreate('manager', 'web');
@@ -80,5 +80,15 @@ class RolePermissionSeeder extends Seeder
 
         $employeeRole = Role::findOrCreate('employee', 'web');
         // Employee has no specific admin permissions, uses the portal
+
+        $supervisorRole = Role::findOrCreate('supervisor', 'web');
+        $supervisorRole->givePermissionTo([
+            'employee.view',
+            'attendance.view',
+            'overtime.view', 'overtime.approve',
+            'leave.view', 'leave.approve',
+            'payroll.view', 'payroll.approve',
+            'report.view',
+        ]);
     }
 }

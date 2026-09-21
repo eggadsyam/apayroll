@@ -6,7 +6,7 @@ Selamat datang di panduan sistem penggajian! Panduan ini disusun dengan bahasa y
 
 ## 👥 Siapa Saja Pengguna (User) Sistem Ini?
 
-Dalam sebuah perusahaan, tidak semua orang mengerjakan hal yang sama. Oleh karena itu, sistem ini membagi pengguna menjadi 5 peran (jabatan) dengan tugas yang berbeda-beda:
+Dalam sebuah perusahaan, tidak semua orang mengerjakan hal yang sama. Oleh karena itu, sistem ini membagi pengguna menjadi 6 peran (jabatan) dengan tugas yang berbeda-beda:
 
 ### 1. Super Admin (Admin Utama)
 * **Siapa dia?** Biasanya tim IT atau pemilik perusahaan.
@@ -17,20 +17,24 @@ Dalam sebuah perusahaan, tidak semua orang mengerjakan hal yang sama. Oleh karen
 * **Apa tugasnya?** HRD adalah "jantung" dari aplikasi ini. Tugasnya paling banyak:
     * Memasukkan data karyawan baru.
     * Mencatat kehadiran (absen), cuti, dan sakit.
-    * Memasukkan data lembur dan kasbon (pinjaman).
+    * Memasukkan data lembur dan urusan koperasi (simpan pinjam).
     * **Tugas Utama:** Memulai proses perhitungan gaji di akhir bulan.
 
-### 3. Manager (Manajer / Atasan)
-* **Siapa dia?** Kepala divisi atau pemimpin departemen.
-* **Apa tugasnya?** Tugas utamanya adalah **menyetujui (Approve)**. Jika anak buahnya minta cuti atau lembur, Manager yang klik tombol "Setuju". Nanti saat HRD selesai menghitung gaji, Manager juga ikut mengecek dan menyetujui totalannya.
+### 3. Supervisor (Atasan Langsung)
+* **Siapa dia?** Atasan langsung (Level 1) yang memimpin tim kecil.
+* **Apa tugasnya?** Tugas utamanya adalah melakukan persetujuan (Approval) Tahap 1. Jika anak buahnya di tim tersebut minta cuti atau lembur, Supervisor adalah orang pertama yang mengecek dan menyetujui.
 
-### 4. Finance (Keuangan)
+### 4. Manager (Manajer Departemen)
+* **Siapa dia?** Kepala divisi atau pemimpin departemen (atasan dari para Supervisor).
+* **Apa tugasnya?** Melakukan persetujuan Tahap 2 untuk cuti dan lembur (setelah disetujui Supervisor). Nanti saat HRD selesai menghitung gaji, Manager juga ikut mengecek dan menyetujui draft gaji divisinya.
+
+### 5. Finance (Keuangan)
 * **Siapa dia?** Bagian keuangan atau bendahara perusahaan.
 * **Apa tugasnya?** Pemegang kunci uang. Setelah HRD menghitung gaji, Finance bertugas mengecek ulang. Jika sudah benar, Finance akan mentransfer uang ke rekening karyawan, lalu menekan tombol **"Bayar (Pay)"** di sistem sebagai tanda lunas.
 
-### 5. Employee (Karyawan Biasa)
+### 6. Employee (Karyawan Biasa)
 * **Siapa dia?** Seluruh staf dan karyawan di perusahaan.
-* **Apa tugasnya?** Karyawan hanya bisa melihat data milik dirinya sendiri. Mereka masuk ke sistem untuk melihat jatah cuti, mengajukan cuti, dan melihat/mendownload **Slip Gaji** mereka.
+* **Apa tugasnya?** Karyawan hanya bisa melihat data milik dirinya sendiri. Mereka masuk ke sistem untuk melihat jatah cuti, mengajukan cuti, mengajukan pinjaman koperasi, dan melihat/mendownload **Slip Gaji** mereka.
 
 ---
 
@@ -51,16 +55,16 @@ Agar tidak bingung, bayangkan proses ini seperti cerita yang terbagi dalam 3 bab
 
 1. **Absensi:** Setiap hari karyawan absen (bisa lewat mesin sidik jari). Di akhir minggu/bulan, data absen ini dimasukkan oleh HRD ke sistem.
 2. **Lembur & Cuti:** 
-   * Jika Karyawan A sakit/cuti, dia mengajukan di sistem. **Manager** akan mengklik "Setuju".
-   * Jika Karyawan B kerja lembur, dicatat di sistem dan **Manager** juga harus mengklik "Setuju" agar lemburnya dibayar.
-3. **Kasbon/Pinjaman (Jika ada):** Jika karyawan pinjam uang ke kantor, HRD akan mencatatnya agar bulan depan gajinya otomatis dipotong untuk cicilan.
+   * Jika Karyawan A sakit/cuti, dia mengajukan di sistem. **Supervisor** dan **Manager** akan mengklik "Setuju" secara berjenjang.
+   * Jika Karyawan B kerja lembur, dicatat di sistem dan **Supervisor** serta **Manager** juga harus mengklik "Setuju" agar lemburnya dibayar.
+3. **Koperasi (Simpan Pinjam):** Jika karyawan mengajukan pinjaman ke koperasi kantor, HRD akan mencatatnya agar bulan depan gajinya otomatis dipotong untuk cicilan. Begitu juga dengan potongan simpanan wajib/sukarela.
 
 ### TAHAP 3: Hari Penggajian (Payday!)
 *Ini adalah proses puncak di akhir bulan. Mari kita lihat urutannya:*
 
 * **Langkah 1: Menghitung Gaji (Oleh HRD)**
   HRD menekan tombol *"Buat Penggajian Bulan Ini"*. Sistem akan sangat pintar dan otomatis menghitung: 
-  *(Gaji Pokok + Uang Lembur) dikurangi (Potongan Cuti/Telat + Cicilan Kasbon)*.
+  *(Gaji Pokok + Uang Lembur) dikurangi (Potongan Cuti/Telat + Koperasi)*.
 * **Langkah 2: Pengecekan Ulang (Oleh Manager)**
   Sebelum uang dikeluarkan, Manager akan melihat draf gaji dari HRD. Jika sudah pantas dan tidak ada yang salah, Manager klik **"Approve"**.
 * **Langkah 3: Persetujuan Akhir (Oleh Finance)**

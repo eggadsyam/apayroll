@@ -26,7 +26,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">{{ $attendances->links() }}</div>
+            <div class="mt-3">{{ $attendances->appends(request()->query())->links() }}</div>
         </div>
     </div>
 </div>
